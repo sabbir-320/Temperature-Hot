@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Temperature Hot</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background: url(images/bg-image.jpg) no-repeat;
+            background-size: cover;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <form class="col-md-6 m-auto py-5">
+            <div class="input-group mb-3">
+                <input id="locationName" type="text" class="form-control"
+                    placeholder="Enter a location for Weather ...">
+                <div class="input-group-append">
+                    <button onclick="(weatherUpdate())" type="button" class="btn btn-danger">Search</button>
+                </div>
+            </div>
+        </form>
+        <div class="weather-status text-white text-center">
+            <img id="icon" src="" alt="">
+            <h1 id="cityName"></h1>
+            <h3><span id="currentTemp"></span>&deg;C</h3>
+            <h1 id="weather" class="lead"></h1>
+        </div>
+    </div>
+    <script>
+        // init city
+        weatherApi("dhaka")
+
+        // update city with click handler
+        function weatherUpdate() {
+            const locationName = document.getElementById("locationName");
+            weatherApi(locationName.value)
+            locationName.value = ""
+        }
+
+        function weatherApi(cityName) {
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=f720ccbe1e5fa8bfc58b358916d61000`)
+                .then(response => response.json())
+                .then(data => tempCount(data))
+            // .catch(err => console.log(err))
+        }
+
+        function tempCount(data) {
+            if (data.cod === "404") {
+                alert(data.message)
+            } else {
+                // city Name
+                const cityName = document.getElementById("cityName")
+                cityName.textContent = data.name
+                // temperature
+                const currentTemp = document.getElementById("currentTemp");
+                currentTemp.textContent = Math.floor(data.main.temp) - 273
+                // weather
+                const weatherCondition = document.getElementById("weather");
+                const iconShow = document.getElementById("icon");
+                const { main, icon } = data.weather[0];
+                weatherCondition.textContent = main;
+                iconShow.src = `https://openweathermap.org/img/wn/${icon}@2x.png`
+            }
+        }
+    </script>
+</body>
+
+</html>
